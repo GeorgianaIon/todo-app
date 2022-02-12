@@ -1,0 +1,266 @@
+﻿@page "/Todos"
+@using AdvancedTodo.Models
+@using Microsoft.AspNetCore.Mvc.Filters
+@using System.Collections
+@using AdvancedTodo.Data
+@inject ITodoData TodoData
+@inject NavigationManager NavMgr
+
+
+<h2 style="font-size:60px;">Todos</h2>
+<p>
+    Filter by User Id: <br/> <input type="number" @oninput="@((arg) => FilterByUserId(arg))" style="border: 1px solid #ccc; width: 60px"/>
+</p>
+
+<p>Filter by completed status: <br/>
+    <select class="form-control selectpicker" @onchange="@((arg) => FilterByCompletedStatus(arg))" style="border: 1px solid #ccc; width:60px">
+        <option>Both</option>
+        <option>False</option>
+        <option>True</option>
+    </select>
+            </p>
+
+@if (todosToShow == null)
+{
+    <p>
+        <em>Loading..</em>
+    </p>
+}else if (!todosToShow.Any())
+{
+    <p>
+        <em>No To Do items exist. Please add some.</em>
+    </p>
+}
+else
+{
+
+    <!-- Table -->
+            <div class="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200">
+                <header class="px-5 py-4 border-b border-gray-100">
+                    <h2 class="font-semibold text-gray-800">To Do List</h2>
+                </header>
+                <div class="p-3">
+                    <div class="overflow-x-auto">
+                        <table class="table-auto w-full">
+                            <thead class="text-xs font-semibold uppercase text-gray-400 bg-gray-50">
+                            <tr>
+                                <th class="p-2 whitespace-nowrap">
+                                    <div class="font-semibold text-left">User Id</div>
+                                </th>
+                                <th class="p-2 whitespace-nowrap">
+                                    <div class="font-semibold text-left">To Do ID</div>
+                                </th>
+                                <th class="p-2 whitespace-nowrap">
+                                    <div class="font-semibold text-left">Title</div>
+                                </th>
+                                <th class="p-2 whitespace-nowrap">
+                                    <div class="font-semibold text-center">Completed?</div>
+                                </th>
+                                <th class="p-2 whitespace-nowrap">
+                                    <div class="font-semibold text-center">Remove</div>
+                                </th>
+                                <th class="p-2 whitespace-nowrap">
+                                    <div class="font-semibold text-center">Edit</div>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-gray-100">
+                            @foreach (var  item in todosToShow)
+                            {
+                                <tr>
+                                    <td class="p-2 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            @*
+                                    <div class="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3"><img class="rounded-full" src="https://raw.githubusercontent.com/cruip/vuejs-admin-dashboard-template/main/src/images/user-36-05.jpg" width="40" height="40" alt="Alex Shatov"></div>
+                                    *@
+                                            <div class="font-medium text-gray-800">@item.UserId</div>
+                                        </div>
+                                    </td>
+                                    <td class="p-2 whitespace-nowrap">
+                                        <div class="text-left">@item.Id</div>
+                                    </td>
+                                    <td class="p-2 whitespace-nowrap">
+                                        <div class="text-left font-medium text-green-500">@item.Title</div>
+                                    </td>
+                                    <td class="p-2 whitespace-nowrap">
+                                        <div class="text-lg text-center"><input type="checkbox" checked=@item.IsCompleted @onchange="@((arg) => CompletedChange(arg, item))"/></div>
+                                    </td>
+                                    <td class="p-2 whitespace-nowrap">
+                                        <div class="text-left">
+                                            <button @onclick="@(() => RemoveTodo(item.Id))">
+                                                <i class="oi oi-trash" style="color:red"/>
+                                            </button></div>
+                                    </td>
+                                    <td class="p-2 whitespace-nowrap">
+                                        <div class="text-left">
+                                            <button @onclick="@(() => Edit(item.Id))">
+                                                <i class="oi oi-pencil" style="color:#1b6ec2"/>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                        
+                    </div>
+                </div>
+            </div>
+    
+}
+@*<h3>Todos</h3>
+<p>
+    Filter by User Id: <input type="number" @oninput="@((arg) => FilterByUserId(arg))" style="width: 50px"/>
+</p>
+
+<p>Filter by completed status:
+    <select class="form-control selectpicker" @onchange="@((arg) => FilterByCompletedStatus(arg))" style="width:100px">
+        <option>Both</option>
+        <option>False</option>
+        <option>True</option>
+    </select>
+            </p>*@
+
+@*@if (todosToShow == null)
+{
+    <p>
+        <em>Loading..</em>
+    </p>
+}else if (!todosToShow.Any())
+{
+    <p>
+        <em>No To Do items exist. Please add some.</em>
+    </p>
+}
+else
+{*@
+    @*<table class="table">
+        <thead>
+        <tr>
+            <th>User ID</th>
+            <th>ToDo ID</th>
+            <th>Title</th>
+            <th>Completed?</th>
+            <th>Remove</th>
+            <th>Edit</th>
+        </tr>
+        </thead>
+        <tbody>
+        /#1#foreach (var  item in todosToShow)
+        {*/
+            <tr>
+                <td>@item.UserId</td>
+                <td>@item.Id</td>
+                <td>@item.Title</td>
+                <td><input type="checkbox" checked=@item.IsCompleted @onchange="@((arg)=>CompletedChange(arg, item))"/></td>
+                <td>
+                    <button @onclick="@(() => RemoveTodo(item.Id))">
+                        <i class="oi oi-trash" style="color:red"/>
+                    </button>
+                </td>
+                <td>
+                    <button @onclick="@(() => Edit(item.Id))">
+                        <i class="oi oi-pencil" style="color:#1b6ec2"/>
+                    </button>
+                </td>
+            </tr>
+
+        }
+        </tbody>
+    </table>
+}*@
+
+@code {
+    private IList<Todo> todos;
+    private IList<Todo> todosToShow;
+
+    private int? filterById;
+    private bool? filterByIsCompleted;
+
+    protected override async Task OnInitializedAsync()
+    {
+        todos =await TodoData.GetTodosAsync();
+        todosToShow = todos;
+    }
+
+    private async Task RemoveTodo(int todoId)
+    {
+        Todo todoToRemove = todos.First(t => t.Id == todoId);
+        try
+        {
+            await TodoData.RemoveTodoAsync(todoId);
+            todos.Remove(todoToRemove);
+            todosToShow.Remove(todoToRemove);
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
+
+    private async Task CompletedChange(ChangeEventArgs evt, Todo todo)
+    {
+        todo.IsCompleted = (bool) evt.Value;
+        await TodoData.UpdateAsync(todo);
+    }
+
+    private void FilterByUserId(ChangeEventArgs changeEventArgs)
+    {
+        filterById = null;
+        try
+        {
+            filterById = int.Parse(changeEventArgs.Value.ToString());
+            
+        }catch(Exception e) { }
+        ExecuteFilter();
+    }
+
+    private void FilterByCompletedStatus(ChangeEventArgs args)
+    {
+        filterByIsCompleted = null;
+        try
+        {
+            filterByIsCompleted = bool.Parse(args.Value.ToString());
+            
+        }catch(Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        ExecuteFilter();
+    }
+
+    private void ExecuteFilter()
+    {
+        todosToShow = todos.Where(t => (filterById != null && t.UserId == filterById || filterById == null) &&
+                                            (filterByIsCompleted != null && t.IsCompleted == filterByIsCompleted ||
+                                             filterByIsCompleted == null)).ToList();
+    }
+
+    private void Edit(int hairColor)
+    {
+        NavMgr.NavigateTo($"Edit/{hairColor}");
+    }
+
+  /*  private void Filter(ChangeEventArgs changeEventArgs)
+    {
+        int? filterById = null;
+        try
+        {
+            filterById = int.Parse(changeEventArgs.Value.ToString());
+        }
+        catch (Exception e)
+        {
+            
+        }
+        if (filterById != null)
+        {
+            todosToShow = todos.Where(t => t.UserId == filterById).ToList();
+        }
+        else
+        {
+            todosToShow = todos;
+        }
+    }*/
+    
+    
+}
